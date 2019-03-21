@@ -6,6 +6,9 @@ import threading
 
 
 class node:
+
+    start = False
+
     def __init__(self, pid, ip, port, group):
         self.pid = pid
         self.m = middleware.middleware(pid, ip, port, group)
@@ -13,8 +16,6 @@ class node:
 
     def start_node(self):
         self.m.start_middleware()
-        time.sleep(10)
-        self.test()
         self.start_recv()
 
     def test(self):
@@ -23,15 +24,21 @@ class node:
         '''
         # for n in self.group:
         #    self.m.middle_send_p2p(["hi", 2, 3], (n["ip"], n["port"]))
-        print("Sending..", "hi "+str(self.pid))
-        self.m.middle_send_mc("hi "+str(self.pid))
+        print("waiting..")
+        while True:
+            if node.start:
+                print("Sending..", "hi "+str(self.pid))
+                self.m.middle_send_mc("hi "+str(self.pid))
+                break
 
     def start_recv(self):
+        local_inbox = []
         while True:
             if self.m.set_event():
-                print("Got signal for message")
                 inbox = self.m.get_inbox()
                 for msg in inbox:
                     print("Process ", self.pid, "Read message", msg)
+                    local_inbox.append(msg)
                 self.m.clear_event()
                 self.m.clear_inbox()
+            print(local_inbox)

@@ -126,8 +126,8 @@ class middleware:
             Send message to given destination
             Destinatiion is a tuple of IP and Port
         '''
+        self.clock += 1
         for n in self.group:
-            self.clock += 1
             s = socket.socket()
             s.connect((n["ip"], n["port"]))
             final_msg = ("ACK", str(self.clock)+"."+str(self.pid), msg_id)
